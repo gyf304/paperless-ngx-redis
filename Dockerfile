@@ -1,10 +1,15 @@
-FROM paperlessngx/paperless-ngx:2.6
+ARG VERSION=2.6.1
+
+FROM paperlessngx/paperless-ngx:${VERSION}
 
 RUN set -eux \
   echo "Installing system packages" \
     && apt-get update \
-    && apt-get install -y --no-install-recommends redis \
+    && apt-get install -y --no-install-recommends patch redis \
     && rm --recursive --force --verbose /var/lib/apt/lists/*
 
-COPY start-redis.sh /custom-cont-init.d/start-redis.sh
-RUN chmod +x /custom-cont-init.d/start-redis.sh
+COPY docker-prepare.sh.diff /tmp/docker-prepare.sh.diff
+RUN set -eux \
+  echo "Patching docker-prepare.sh" \
+    && patch /sbin/docker-prepare.sh /tmp/docker-prepare.sh.diff \
+    && rm /tmp/docker-prepare.sh.diff

@@ -1,0 +1,26 @@
+--- docker-prepare.sh	2024-03-06 05:17:12.117002417 +0000
++++ docker-prepare.sh	2024-03-06 05:21:41.025009411 +0000
+@@ -2,6 +2,11 @@
+
+ set -e
+
++start_redis() {
++	echo "Starting Redis server..."
++	redis-server &
++}
++
+ wait_for_postgres() {
+ 	local attempt_num=1
+ 	local -r max_attempts=5
+@@ -103,6 +108,11 @@
+ 		wait_for_postgres
+ 	fi
+
++	if [[ -n "${PAPERLESS_START_REDIS}" ]]; then
++		export PAPERLESS_REDIS="redis://localhost:6379"
++		start_redis
++	fi
++
+ 	wait_for_redis
+
+ 	migrations

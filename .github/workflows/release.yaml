@@ -13,4 +13,4 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
           docker buildx create --use
-          docker buildx build --platform linux/arm64/v8,linux/amd64 --tag $DOCKER_HUB_REPOSITORY:$(git describe --tags) . --push
+          docker buildx build --platform linux/arm64/v8,linux/amd64 --tag $DOCKER_HUB_REPOSITORY:$(echo $GITHUB_REF | cut -dv -f 2) --build-arg VERSION=$(echo $GITHUB_REF | cut -dv -f 2) . --push
